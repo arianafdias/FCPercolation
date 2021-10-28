@@ -160,9 +160,9 @@ vector<float> statistics(int L, double p, int nrSamples = 1000){
 
 int main() {
     int L[5]= {16, 32, 64, 128, 256};
-    ofstream StatFile("Statistic.txt");
+    ofstream StatFile("StatisticPc.txt");
     for (int k = 0; k < 5; k++) {
-        for (double p = 0; p < 1; p = p + 0.01) {
+        for (double p = 0.4; p < 0.43; p = p + 0.005) {
 
             vector<float> sta = statistics(L[k], p, 1000);
             StatFile << L[k] <<"\t"<< p << "\t" << sta[0] << "\t" << sta[1] << "\t" << sta[2] << endl;
