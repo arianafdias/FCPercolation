@@ -20,7 +20,7 @@ vector<int> burning_method( int L, double p, unsigned seed = 2147483647){
     //------------ array definition ------------//
     for (int i = 0; i < L * L; ++i) {
         double random = random_nr();
-        if (random > p) {
+        if (random <= p) {
             arr[i] = 1;
         } else {
             arr[i] = 0;
@@ -113,56 +113,56 @@ vector<int> burning_method( int L, double p, unsigned seed = 2147483647){
     //cout << tmin << "   número de passos de tempo necessários para o fogo alcançar o outro lado do sistema" << endl;
     
     vector<int> vec;
-    vec.push_back(t);
+    
     if (last_line == true){
-    	vec.push_back(tmin);
         vec.push_back(1);
     }else{
-    vec.push_back(0);}
+    	vec.push_back(0);}
+    	
+    vec.push_back(tmin);
+    vec.push_back(t);
+    
     return vec;
     
 }
 
 vector<float> statistics(int L, double p, int nrSamples = 1000){
-    vector<unsigned int > tmin;
-    vector<unsigned int > t;
+    double avg_totalTime = 0.0;
+    double avg_percTime = 0.0;
+    double frac_perc = 0.0;
+    
     for (int i = 0; i < nrSamples; i++) {
-        vector<int> config = burning_method(L,p);
-        //cout << config[2] <<"\t" << "agregado?"<< endl;
-        //cout << config[1] <<"\t" << "tmin"<< endl;
-        //cout << config[0] <<"\t" << "t"<< endl;
-        if (config[2] == 1){   //checks if there is a percolation cluster
-            t.push_back(config[0]); // total burning time
-            tmin.push_back(config[1]); // time to go from start to end
+        vector<int> config = burning_method(L,p); //[perc?, tmin, t]
+        int t = config[2];
+        int tmin = config[1];
+        int perc = config[0];
+        frac_perc += (double) perc;
+        
+        if (perc > 0.00001){   //checks if there is a percolation cluster
+        	avg_percTime += tmin;
+        	avg_totalTime += t;
         }
     }
-    float fraction = (float) tmin.size()/ nrSamples;
-
-    int shrt = 0;
-    int lng = 0 ;
-    for (int i = 0; i < tmin.size(); i++) {
-        shrt += tmin[i];
-        lng += t[i];
+    
+    if (frac_perc > 0.00001){
+    	avg_percTime = avg_percTime/(frac_perc*1000);
+    	avg_totalTime = avg_totalTime/(frac_perc*1000);
     }
-    float meanTmin = (float) shrt/tmin.size();
-    float meanT = (float) lng/t.size();
+    
+    frac_perc = frac_perc;
+    
     vector<float> vec;
-    vec.push_back(fraction);
-    if (fraction == 0){
-    vec.push_back(0);
-    vec.push_back(0);
-    }else{
-    vec.push_back(meanTmin);
-    vec.push_back(meanT);
-    }
+    vec.push_back(frac_perc);
+    vec.push_back(avg_totalTime);
+    vec.push_back(avg_percTime);
     return vec;
 }
 
 int main() {
     int L[5]= {16, 32, 64, 128, 256};
-    ofstream StatFile("StatisticPc.txt");
+    ofstream StatFile("Statistic.txt");
     for (int k = 0; k < 5; k++) {
-        for (double p = 0.4; p < 0.43; p = p + 0.005) {
+        for (double p = 0.1; p < 1; p = p + 0.01) { 
 
             vector<float> sta = statistics(L[k], p, 1000);
             StatFile << L[k] <<"\t"<< p << "\t" << sta[0] << "\t" << sta[1] << "\t" << sta[2] << endl;

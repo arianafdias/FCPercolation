@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-with open('StatisticPc.txt') as file:
+with open('Statistic.txt') as file:
     lst = []
     for line in file:
         lst.append([float(x) for x in line.split()])
@@ -12,8 +12,8 @@ col3 = [ x[2] for x in lst] # frac
 col4 = [ x[3] for x in lst] # tmin medio
 col5 = [ x[4] for x in lst] # tmedio
 
-for i in range(len(col3)):
-	col3[i] = 1- col3[i]
+#for i in range(len(col3)):
+#	col3[i] = 1- col3[i]
 
 frac16 = []
 tmin16 = []
@@ -30,14 +30,14 @@ tmed128 = []
 frac256 = []
 tmin256 = []
 tmed256 = []
-#p = [0.01*i for i in range(0,100) ]
-p =  [0.400,0.405,0.410,0.415,0.420,0.425]
-print(p)
+p = []
+
 for i in range(len(col1)):
 	if col1[i] == 16:
 		frac16.append(col3[i])
 		tmin16.append(col4[i])
 		tmed16.append(col5[i])
+		p.append(col2[i])
 	if col1[i] == 32:
 		frac32.append(col3[i])
 		tmin32.append(col4[i])
